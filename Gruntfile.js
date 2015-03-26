@@ -124,12 +124,14 @@ module.exports = function(grunt) {
         },
 
         /**
-         * Configuration for grunt-mocha-test, which is used to:
-         *  - Execute server side node.js tests
+         * Configuration for grunt-mocha-istanbul, which is used to:
+         *  - Execute server side node.js tests, with code coverage
          */
-        mochaTest: {
+        mocha_istanbul: {
             options: {
+                reportFormats: [ 'text', 'html' ],
                 reporter: 'spec',
+                timeout: 8000,
                 colors: true
             },
             default: [ TEST.unit.allFilesPattern('js') ]
@@ -211,11 +213,11 @@ module.exports = function(grunt) {
             target = target || 'dev';
 
             if(testType === 'unit') {
-                testAction = 'mochaTest:default';
+                testAction = 'mocha_istanbul:default';
                 var unitTestSuite = grunt.option('unitTestSuite');
                 if(typeof unitTestSuite === 'string' && unitTestSuite.length > 0) {
                     grunt.log.writeln('Running test suite: ', unitTestSuite);
-                    grunt.config.set('mochaTest.default', TEST.unit.getChildPath(unitTestSuite));
+                    grunt.config.set('mocha_istanbul.default', TEST.unit.getChildPath(unitTestSuite));
                 }
             }
 

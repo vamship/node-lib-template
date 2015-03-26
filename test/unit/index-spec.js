@@ -13,4 +13,10 @@ describe('index', function() {
     it('should implement methods required by the interface', function() {
         expect(_index).to.have.property('todo').and.to.be.a('function');
     });
+
+    describe('todo()', function() {
+        it('should return true when invoked', function() {
+            expect(_index.todo()).to.be.true;
+        });
+    });
 });
