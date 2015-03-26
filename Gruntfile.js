@@ -131,7 +131,6 @@ module.exports = function(grunt) {
             options: {
                 reportFormats: [ 'text', 'html' ],
                 reporter: 'spec',
-                timeout: 8000,
                 colors: true
             },
             default: [ TEST.unit.allFilesPattern('js') ]
