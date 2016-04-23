@@ -1,6 +1,6 @@
 {
   "name": "node-lib-template",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Starter template for node js libraries",
   "main": "lib/index.js",
   "scripts": {
