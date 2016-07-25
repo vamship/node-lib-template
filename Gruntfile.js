@@ -152,7 +152,13 @@ module.exports = function(grunt) {
         jshint: {
             options: {
                 reporter: require('jshint-stylish'),
-                jshintrc: true
+                esversion: 6,
+                node: true,
+                mocha: true,
+                // This is because we are using Bluebird to override native
+                // promise implementations, and that results in linting errors
+                // for redefinition of "Promise"
+                predef: [ "-Promise" ]
             },
             dev: [ 'Gruntfile.js',
                     LIB.allFilesPattern('js'),
