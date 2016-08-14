@@ -141,7 +141,7 @@ module.exports = function(grunt) {
          *  - Beautify all javascript, html and css files  prior to checkin.
          */
         jsbeautifier: {
-            dev: [ LIB.allFilesPattern('js') ]
+            dev: [ LIB.allFilesPattern('js'), TEST.allFilesPattern('js') ]
         },
 
         /**
