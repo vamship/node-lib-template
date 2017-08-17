@@ -1,10 +1,10 @@
 {
   "name": "node-lib-template",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Starter template for node js libraries",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "grunt"
+    "test": "grunt test"
   },
   "keywords": [
     "nodejs",
@@ -12,32 +12,31 @@
   ],
   "author": "Vamshi K Ponnapalli <vamshi.ponnapalli@gmail.com>",
   "license": "ISC",
-  "dependencies": {
-    "winston": "^2.2.0"
-  },
   "devDependencies": {
     "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai-as-promised": "^6.0.0",
+    "esformatter-ignore": "^0.1.3",
+    "esformatter-remove-trailing-commas": "^1.0.1",
     "grunt": "^1.0.1",
     "grunt-bump": "^0.8.0",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-jsbeautifier": "^0.2.13",
-    "grunt-mocha-istanbul": "^5.0.1",
-    "istanbul": "^0.4.4",
-    "jshint-stylish": "^2.2.0",
-    "load-grunt-tasks": "^3.5.0",
-    "mocha": "^3.0.2",
-    "sinon": "^1.17.4",
-    "sinon-chai": "^2.8.0",
+    "grunt-esformatter": "^1.2.0",
+    "grunt-eslint": "^19.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "istanbul": "^0.4.5",
+    "load-grunt-tasks": "^3.5.2",
+    "mocha": "^3.2.0",
+    "sinon": "^2.1.0",
+    "sinon-chai": "^2.9.0",
     "time-grunt": "^1.4.0",
     "wysknd-lib": "0.0.2",
-    "wysknd-test": "^2.2.1"
+    "wysknd-test": "^3.9.6"
   },
   "directories": {
     "test": "test"
   },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/vamship/node-lib-template.git"

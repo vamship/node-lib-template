@@ -1,7 +1,3 @@
-/* jshint node:true, expr:true */
-'use strict';
-
-
 module.exports = {
     /**
      * Empty function, to be removed and replaced with something more

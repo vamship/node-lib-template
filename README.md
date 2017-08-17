@@ -16,7 +16,7 @@ The project has the following structure.
 
 ```
 <ROOT>
- |--- lib               [Source files for the library]
+ |--- src               [Source files for the library]
  |
  |--- test              [Test files]
  |   |--- unit          [Unit test files]
@@ -29,7 +29,7 @@ The project has the following structure.
  |--- .gitignore        [List of files to be ignored by git]
 
 ```
-The application and test code is completely self contained within the `lib` and `test` directories respectively.
+The application and test code is completely self contained within the `src` and `test` directories respectively.
 
 ##Usage
 

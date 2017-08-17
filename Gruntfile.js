@@ -1,21 +1,21 @@
 /* jshint node:true */
 'use strict';
 
-var _fs = require('fs');
-var _folder = require('wysknd-lib').folder;
-var _utils = require('wysknd-lib').utils;
+const _folder = require('wysknd-lib').folder;
+const _utils = require('wysknd-lib').utils;
 
 // -------------------------------------------------------------------------------
 //  Help documentation
 // -------------------------------------------------------------------------------
-var HELP_TEXT =
+/*esfmt-ignore-start*/
+const HELP_TEXT =
 '--------------------------------------------------------------------------------\n' +
 ' Defines tasks that are commonly used during the development process. This      \n' +
 ' includes tasks for linting, building and testing.                              \n' +
 '                                                                                \n' +
 ' Supported Tasks:                                                               \n' +
 '   [default]         : Performs standard pre-checkin activities. Runs           \n' +
-'                       jsbeautifier on all source files, validates the files    \n' +
+'                       formatting on all source files, validates the files      \n' +
 '                       (linting), and then executes tests against the files.    \n' +
 '                                                                                \n' +
 '   env               : Provides information regarding the current environment.  \n' +
@@ -27,11 +27,11 @@ var HELP_TEXT =
 '   clean             : Cleans out all build artifacts and other temporary files \n' +
 '                       or directories.                                          \n' +
 '                                                                                \n' +
-'   monitor:[opt1]:   : Monitors files for changes, and triggers actions based   \n' +
-'           [opt2]:     on specified options. Supported options are as follows:  \n' +
-'                         [lint]   : Executes jshint with default options against\n' +
-'                                    all source files.                           \n' +
-'                         [unit]   : Executes unit tests against all source      \n' +
+'   monitor:[<opt1>]: : Monitors files for changes, and triggers actions based   \n' +
+'           [<opt2>]:   on specified options. Supported options are as follows:  \n' +
+'           [<opt3>]     [lint]    : Performs linting with default options       \n' +
+'                                    against all source files.                   \n' +
+'                        [unit]    : Executes unit tests against all source      \n' +
 '                                    files.                                      \n' +
 '                                                                                \n' +
 '                       Multiple options may be specified, and the triggers will \n' +
@@ -39,9 +39,11 @@ var HELP_TEXT =
 '                       requires a web server to be launched, this will be done  \n' +
 '                       automatically.                                           \n' +
 '                                                                                \n' +
-'   jshint:dev        : Executes jshint against all source files.                \n' +
+'   lint              : Performs linting of all source and test files.           \n' +
 '                                                                                \n' +
-'   test:unit         : Executes unit tests against source files.                \n' +
+'   format            : Formats source and test files.                           \n' +
+'                                                                                \n' +
+'   test:[unit]       : Executes unit tests against source files.                \n' +
 '                                                                                \n' +
 '   bump:[major|minor]: Updates the version number of the package. By default,   \n' +
 '                       this task only increments the patch version number. Major\n' +
@@ -49,7 +51,7 @@ var HELP_TEXT =
 '                       specifying the "major" or "minor" subtask.               \n' +
 '                                                                                \n' +
 ' Supported Options:                                                             \n' +
-'   --unitTestSuite   : Can be used to specify a unit test suite to execute when \n' +
+'   --test-suite      : Can be used to specify a unit test suite to execute when \n' +
 '                       running tests. Useful when development is focused on a   \n' +
 '                       small section of the app, and there is no need to retest \n' +
 '                       all components when runing a watch.                      \n' +
@@ -60,6 +62,8 @@ var HELP_TEXT =
 '            during the dev/build process.                                       \n' +
 '                                                                                \n' +
 '--------------------------------------------------------------------------------';
+/*esfmt-ignore-end*/
+
 module.exports = function(grunt) {
     /* ------------------------------------------------------------------------
      * Initialization of dependencies.
@@ -73,42 +77,38 @@ module.exports = function(grunt) {
     /* ------------------------------------------------------------------------
      * Build configuration parameters
      * ---------------------------------------------------------------------- */
-    var packageConfig = grunt.file.readJSON('package.json') || {};
-    
-    var ENV = {
+    const packageConfig = grunt.file.readJSON('package.json') || {};
+
+    const ENV = {
         appName: packageConfig.name || '__UNKNOWN__',
         appVersion: packageConfig.version || '__UNKNOWN__',
-        tree: {                             /* ------------------------------ */
-                                            /* <ROOT>                         */
-            'lib': {                        /*  |--- lib                      */
-            },                              /*  |                             */
-            'test': {                       /*  |--- test                     */
-                'unit': null                /*  |   |--- unit                 */
-            },                              /*  |                             */
-            'coverage': null                /*  |--- coverage                 */
-        }                                   /* ------------------------------ */
+        /*esfmt-ignore-start*/
+        tree: { /* ------------------------------ */
+            /* <ROOT>                         */
+            'src': null, /*  |--- src                      */
+            'test': { /*  |--- test                     */
+                'unit': null /*  |   |--- unit                 */
+            }, /*  |                             */
+            'coverage': null /*  |--- coverage                 */
+        } /* ------------------------------ */
     };
 
     ENV.ROOT = _folder.createFolderTree('./', ENV.tree);
 
-    // This is the root url prefix for the app, and represents the path 
-    // (relative to root), where the app will be available. This value should
-    // remain unchanged for most apps, but can be tweaked here if necessary.
-    ENV.appRoot = '/' + ENV.appName;
     (function _createTreeRefs(parent, subTree) {
-        for(var folder in subTree) {
-            var folderName = folder.replace('.', '_');
+        for (let folder in subTree) {
+            const folderName = folder.replace('.', '_');
             parent[folderName] = parent.getSubFolder(folder);
 
-            var children = subTree[folder];
-            if(typeof children === 'object') {
+            const children = subTree[folder];
+            if (typeof children === 'object') {
                 _createTreeRefs(parent[folder], children);
             }
         }
     })(ENV.ROOT, ENV.tree);
 
     // Shorthand references to key folders.
-    var LIB = ENV.ROOT.lib;
+    var SRC = ENV.ROOT.src;
     var TEST = ENV.ROOT.test;
 
     /* ------------------------------------------------------------------------
@@ -120,7 +120,7 @@ module.exports = function(grunt) {
          *  - Remove temporary files and folders.
          */
         clean: {
-            coverage: [ ENV.ROOT.coverage.getPath() ]
+            coverage: [ENV.ROOT.coverage.getPath()]
         },
 
         /**
@@ -129,42 +129,43 @@ module.exports = function(grunt) {
          */
         mocha_istanbul: {
             options: {
-                reportFormats: [ 'text', 'html' ],
+                reportFormats: ['text', 'html'],
                 reporter: 'spec',
                 colors: true
             },
-            default: [ TEST.unit.allFilesPattern('js') ]
+            unit: [TEST.unit.allFilesPattern('js')]
         },
 
         /**
-         * Configuration for grunt-jsbeautifier, which is used to:
-         *  - Beautify all javascript, html and css files  prior to checkin.
+         * Configuration for grunt-esformatter, which is used to:
+         *  - Format javascript source code
          */
-        jsbeautifier: {
-            dev: [ LIB.allFilesPattern('js'), TEST.allFilesPattern('js') ]
-        },
-
-        /**
-         * Configuration for grunt-contrib-jshint, which is used to:
-         *  - Monitor all source/test files and trigger actions when these
-         *    files change.
-         */
-        jshint: {
+        esformatter: {
             options: {
-                reporter: require('jshint-stylish'),
-                esversion: 6,
-                node: true,
-                mocha: true,
-                // This is because we are using Bluebird to override native
-                // promise implementations, and that results in linting errors
-                // for redefinition of "Promise"
-                predef: [ "-Promise" ]
+                plugins: [
+                    'esformatter-ignore',
+                    'esformatter-remove-trailing-commas'
+                ]
             },
-            dev: [ 'Gruntfile.js',
-                    LIB.allFilesPattern('js'),
-                    TEST.allFilesPattern('js') ]
+            src: [
+                'Gruntfile.js',
+                SRC.allFilesPattern('js'),
+                TEST.allFilesPattern('js')
+            ]
         },
-        
+
+        /**
+         * Configuration for grunt-eslint, which is used to:
+         *  - Lint source and test files.
+         */
+        eslint: {
+            dev: [
+                'Gruntfile.js',
+                SRC.allFilesPattern('js'),
+                TEST.allFilesPattern('js')
+            ]
+        },
+
         /**
          * Configuration for grunt-contrib-watch, which is used to:
          *  - Monitor all source/test files and trigger actions when these
@@ -172,8 +173,8 @@ module.exports = function(grunt) {
          */
         watch: {
             allSources: {
-                files: [ LIB.allFilesPattern(), TEST.allFilesPattern() ],
-                tasks: [ ]
+                files: [SRC.allFilesPattern(), TEST.allFilesPattern()],
+                tasks: []
             }
         },
 
@@ -184,7 +185,7 @@ module.exports = function(grunt) {
         bump: {
             options: {
                 push: false
-             }
+            }
         }
     });
 
@@ -200,40 +201,38 @@ module.exports = function(grunt) {
      *  - Testing build artifacts
      *  - Cleaning up build results
      */
-    grunt.registerTask('default', [ 'jsbeautifier:dev',
-                                    'jshint:dev',
-                                    'test:unit',
-                                    'clean' ]);
+    grunt.registerTask('default', [
+        'format',
+        'lint',
+        'test:unit',
+        'clean']);
 
     /**
-     * Test task - executes client only tests, server only tests or end to end
-     * tests based on the test type passed in. Tests may be executed against
-     * dev code or build artifacts.
+     * Test task - executes unit tests against all source files.
      */
     grunt.registerTask('test',
         'Executes tests against sources',
-        function(testType, target) {
-            var testAction;
-            
-            target = target || 'dev';
+        function(testType) {
+            testType = testType || 'unit';
+            let testAction;
 
-            if(testType === 'unit') {
-                testAction = 'mocha_istanbul:default';
-                var unitTestSuite = grunt.option('unitTestSuite');
-                if(typeof unitTestSuite === 'string' && unitTestSuite.length > 0) {
-                    grunt.log.writeln('Running test suite: ', unitTestSuite);
-                    grunt.config.set('mocha_istanbul.default', TEST.unit.getChildPath(unitTestSuite));
+            if (['unit'].indexOf(testType) >= 0) {
+                testAction = `mocha_istanbul:${testType}`;
+                const testSuite = grunt.option('test-suite');
+                if (typeof testSuite === 'string' && testSuite.length > 0) {
+                    const suitePath = TEST.unit.getChildPath(testSuite);
+                    grunt.log.writeln(`Running test suite: [${testSuite}], Path: [${suitePath}]`);
+                    grunt.config.set(`mocha_istanbul.${testType}`, suitePath);
                 }
             }
 
-            if(testAction) {
+            if (testAction) {
                 grunt.task.run(testAction);
             } else {
                 grunt.log.warn('Unrecognized test type. Please see help (grunt help) for task usage information');
             }
         }
     );
-
 
     // Monitor task - track changes on different sources, and enable auto
     // execution of tests if requested.
@@ -242,26 +241,23 @@ module.exports = function(grunt) {
     grunt.registerTask('monitor',
         'Monitors source files for changes, and performs actions as necessary',
         function() {
-            var tasks = [];
+            const tasks = [];
 
             // Process the arguments (specified as subtasks).
-            for (var index = 0; index < arguments.length; index++) {
-                var arg = arguments[index];
-                var task = null;
-
+            Array.prototype.slice.call(arguments).forEach((arg) => {
                 if (arg === 'lint') {
-                    tasks.push('jshint:dev');
+                    tasks.push('lint');
 
-                } else if ('unit' === arg) {
+                } else if (arg === 'unit') {
                     tasks.push('test:unit');
 
                 } else {
                     // Unrecognized argument.
-                    console.warn('Unrecognized argument: %s', arg);
+                    grunt.log.warn('Unrecognized argument: %s', arg);
                 }
-            }
+            });
 
-            if(tasks.length > 0) {
+            if (tasks.length > 0) {
                 grunt.config.set('watch.allSources.tasks', tasks);
                 grunt.log.writeln('Tasks to run on change: [' + tasks + ']');
                 grunt.task.run('watch:allSources');
@@ -277,26 +273,26 @@ module.exports = function(grunt) {
     grunt.registerTask('env',
         'Shows the current environment setup',
         function() {
-            var separator = new Array(80).join('-');
+            const separator = new Array(80).join('-');
             function _showRecursive(root, indent) {
-                var indentChars = '  ';
-                if(!indent) {
+                let indentChars = '  ';
+                if (!indent) {
                     indent = 0;
-                } else  {
+                } else {
                     indentChars += '|';
                 }
                 indentChars += new Array(indent).join(' ');
                 indentChars += '|--- ';
-                var hasChildren = false;
-                for(var prop in root) {
-                    var member = root[prop];
-                    if(typeof member === 'object') {
-                        var maxLen = 74 - (indentChars.length + prop.length);
-                        var status = _utils.padLeft(member.getStatus(), maxLen);
+                let hasChildren = false;
+                for (let prop in root) {
+                    const member = root[prop];
+                    if (typeof member === 'object') {
+                        const maxLen = 74 - (indentChars.length + prop.length);
+                        const status = _utils.padLeft(member.getStatus(), maxLen);
 
                         grunt.log.writeln(indentChars + prop + status);
                         hasChildren = true;
-                        if(_showRecursive(member, indent  + 4)) {
+                        if (_showRecursive(member, indent + 4)) {
                             grunt.log.writeln('  |');
                         }
                     }
@@ -312,11 +308,21 @@ module.exports = function(grunt) {
     );
 
     /**
+     * Lint task - checks source and test files for linting errors.
+     */
+    grunt.registerTask('lint', ['eslint:dev']);
+
+    /**
+     * Formatter task - formats all source and test files.
+     */
+    grunt.registerTask('format', ['esformatter']);
+
+    /**
      * Shows help information on how to use the Grunt tasks.
      */
-    grunt.registerTask('help', 
+    grunt.registerTask('help',
         'Displays grunt help documentation',
-        function(){
+        function() {
             grunt.log.writeln(HELP_TEXT);
         }
     );
