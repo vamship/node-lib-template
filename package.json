@@ -14,7 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "chai": "^4.1.1",
-    "chai-as-promised": "^6.0.0",
+    "chai-as-promised": "^7.1.1",
     "esformatter-ignore": "^0.1.3",
     "esformatter-remove-trailing-commas": "^1.0.1",
     "grunt": "^1.0.1",
