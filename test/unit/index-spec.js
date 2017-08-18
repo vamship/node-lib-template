@@ -7,13 +7,13 @@ const expect = _chai.expect;
 
 const _index = require('../../src/index');
 
-describe('index', function() {
-    it('should implement methods required by the interface', function() {
+describe('index', () => {
+    it('should implement methods required by the interface', () => {
         expect(_index).to.have.property('todo').and.to.be.a('function');
     });
 
-    describe('todo()', function() {
-        it('should return true when invoked', function() {
+    describe('todo()', () => {
+        it('should return true when invoked', () => {
             expect(_index.todo()).to.be.true;
         });
     });
